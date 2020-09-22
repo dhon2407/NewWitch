@@ -74,8 +74,10 @@ namespace Game.Board
                 if (chainCount <= 1)
                     return;
 
-                if (chainCount >= 5)
+                if (chainCount == 5)
                     slot.SetBooster(BoosterType.Slice);
+                else if (chainCount >= 6)
+                    slot.SetBooster(BoosterType.Burst);
                 else
                     slot.Pop();
             }

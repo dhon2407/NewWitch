@@ -34,6 +34,11 @@ namespace Utilities.Helpers
             return GetMiddleAdjacentIndexes(index, gridSideCount); 
         }
 
+        public static int[] GetRotatingIndex(this int index, int gridSideCount)
+        {
+            
+        }
+
         public static int[] GetColumnIndexes(this int index, int gridSideCount)
         {
             var columnIndexes = new int[gridSideCount];
@@ -106,28 +111,36 @@ namespace Utilities.Helpers
             return indexes.ToArray();
         }
 
-        private static int[] GetCornerAdjacentIndexes(int index, int sideCount)
+        private static int[] GetCornerAdjacentIndexes(int index, int sideCount, bool includeDiagonals = false)
         {
             var indexes = new List<int>();
             if (index == 0)
             {
                 indexes.Add(1);
                 indexes.Add(sideCount);
+                if (includeDiagonals)
+                    indexes.Add(sideCount + 1);
             }
             else if (index == sideCount - 1)
             {
                 indexes.Add(index - 1);
                 indexes.Add(index + sideCount);
+                if (includeDiagonals)
+                    indexes.Add(index + sideCount - 1);
             }
             else if (index == sideCount * sideCount - sideCount)
             {
                 indexes.Add(index - sideCount);
                 indexes.Add(index + 1);
+                if (includeDiagonals)
+                    indexes.Add(index - sideCount + 1);
             }
             else if (index == sideCount * sideCount - 1)
             {
                 indexes.Add(index - 1);
-                indexes.Add(index - sideCount);    
+                indexes.Add(index - sideCount);
+                if (includeDiagonals)
+                    indexes.Add(index - sideCount - 1);
             }
 
             return indexes.ToArray();
