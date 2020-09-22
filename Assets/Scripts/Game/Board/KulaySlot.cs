@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Game.Board.Booster;
 using GameData;
 using GameSettings;
 using Sirenix.OdinInspector;
@@ -63,6 +64,8 @@ namespace Game.Board
 
             _popped = true;
             booster = BoosterType.None;
+            if (_boosterDisplayHandler)
+                _boosterDisplayHandler.HideIcon();
             slotIcon.DOFade(0, 0);
         }
         
@@ -100,7 +103,6 @@ namespace Game.Board
             booster = type;
             _popped = false;
             
-            slotIcon.DOFade(1, 0.2f);
             LoadSlotIcon();
         }
 
@@ -110,11 +112,13 @@ namespace Game.Board
         private Button _button;
         private Vector3 _initialPosition;
         private bool _popped;
+        private BoosterDisplayHandler _boosterDisplayHandler;
 
         private void Awake()
         {
             _transform = transform;
             _button = GetComponent<Button>();
+            _boosterDisplayHandler = GetComponentInChildren<BoosterDisplayHandler>();
             _currentKulay = randomizeKulayAtStart ? Settings.Kulay.Random : defaultKulay;
         }
 
@@ -132,9 +136,24 @@ namespace Game.Board
         private void LoadSlotIcon()
         {
             if (!IsBoostSlot)
+            {
+                if (_boosterDisplayHandler)
+                    _boosterDisplayHandler.HideIcon();
                 slotIcon.sprite = Settings.Kulay.GetData(_currentKulay).icon;
+            }
             else
-                slotIcon.sprite = Settings.Booster.GetIcon(booster);
+            {
+                if (_boosterDisplayHandler)
+                {
+                    slotIcon.sprite = null;
+                    slotIcon.DOFade(0, 0);
+                    _boosterDisplayHandler.SetIcon(booster);
+                }
+                else
+                {
+                    slotIcon.sprite = Settings.Booster.GetIcon(booster);
+                }
+            }
         }
 
         public void Renew(Vector3 spawnPosition, float duration)

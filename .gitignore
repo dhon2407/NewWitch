@@ -351,3 +351,9 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+.idea/
+
+[Tt]emp/
+[Ll]ibrary/
+Assembly-CSharp.csproj
