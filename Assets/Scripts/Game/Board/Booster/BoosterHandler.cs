@@ -25,7 +25,6 @@ namespace Game.Board.Booster
             {
                 case BoosterType.Slice:
                     var isHorizontal = Random.Range(0f, 1f) > 0.5f;
-
                     PopSlots(new List<int>(sourceIndex.GetAdjacentLineIndex(_currentBoardSideCount, isHorizontal)));
                     break;
                 case BoosterType.Burst:
@@ -53,7 +52,13 @@ namespace Game.Board.Booster
         private void PopSlots(List<int> popSlotIndexes)
         {
             foreach (var slot in _currentSlots.Where(slot => popSlotIndexes.Contains(slot.SlotIndex)))
+            {
+                var boosterType = slot.IsBoostSlot ? slot.Booster : (BoosterType?) null;
                 slot.Pop();
+                
+                if (boosterType.HasValue)
+                    ExecuteBoosterEffect(slot.SlotIndex, boosterType.Value);
+            }
         }
     }
 }

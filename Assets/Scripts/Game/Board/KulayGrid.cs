@@ -189,7 +189,7 @@ namespace Game.Board
                 
                 var adjacentSlot = GetSlotAt(adjacentIndex);
 
-                if (adjacentSlot == null || adjacentSlot.Popped)
+                if (adjacentSlot == null || adjacentSlot.Popped || adjacentSlot.IsBoostSlot)
                     continue;
 
                 if (adjacentSlot.Kulay != currentKulay)
