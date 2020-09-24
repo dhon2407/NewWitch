@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Utilities.Helpers
 {
@@ -24,19 +25,24 @@ namespace Utilities.Helpers
             return lineIndexes;
         }
         
-        public static int[] GetAdjacentIndex(this int index, int gridSideCount)
+        public static int[] GetAdjacentIndex(this int index, int gridSideCount, bool includeDiagonals = false)
         {
             if (IsCornerIndex(index, gridSideCount))
-                return GetCornerAdjacentIndexes(index, gridSideCount);
+                return GetCornerAdjacentIndexes(index, gridSideCount, includeDiagonals);
             if (IsSideIndex(index,gridSideCount))
-                return GetSideAdjacentIndexes(index, gridSideCount);
+                return GetSideAdjacentIndexes(index, gridSideCount, includeDiagonals);
             
-            return GetMiddleAdjacentIndexes(index, gridSideCount); 
+            return GetMiddleAdjacentIndexes(index, gridSideCount, includeDiagonals); 
         }
 
         public static int[] GetRotatingIndex(this int index, int gridSideCount)
         {
-            
+            if (IsCornerIndex(index, gridSideCount))
+                return GetCornerAdjacentIndexes(index, gridSideCount, true);
+            if (IsSideIndex(index, gridSideCount))
+                return GetSideAdjacentIndexes(index, gridSideCount, true);
+
+            return GetMiddleAdjacentIndexes(index, gridSideCount, true);
         }
 
         public static int[] GetColumnIndexes(this int index, int gridSideCount)
@@ -70,42 +76,75 @@ namespace Utilities.Helpers
             return null;
         }
 
-        private static int[] GetMiddleAdjacentIndexes(int index, int sideCount)
+        private static int[] GetMiddleAdjacentIndexes(int index, int sideCount, bool includeDiagonals = false)
         {
-            var indexes = new List<int>
-            {
-                index + 1, index - 1, index + sideCount, index - sideCount
-            };
+            var indexes = new List<int> {index + 1, index - 1, index + sideCount, index - sideCount};
             
+            if (!includeDiagonals)
+                return indexes.ToArray();
+            
+            indexes.Add(index + sideCount + 1);
+            indexes.Add(index + sideCount - 1);
+            indexes.Add(index - sideCount + 1);
+            indexes.Add(index - sideCount - 1);
+
             return indexes.ToArray();
         }
 
-        private static int[] GetSideAdjacentIndexes(int index, int sideCount)
+        private static int[] GetSideAdjacentIndexes(int index, int sideCount, bool includeDiagonals = false)
         {
             var indexes = new List<int>();
+            //Top Side
             if (index < sideCount - 1)
             {
                 indexes.Add(index + 1);
                 indexes.Add(index - 1);
                 indexes.Add(index + sideCount);
+
+                if (!includeDiagonals)
+                    return indexes.ToArray();
+                
+                indexes.Add(index + sideCount - 1);
+                indexes.Add(index + sideCount + 1);
             }
+            //Bottom Side
             else if (index > sideCount * (sideCount - 1) && index < sideCount * sideCount - 1)
             {
                 indexes.Add(index + 1);
                 indexes.Add(index - 1);
                 indexes.Add(index - sideCount);
+
+                if (!includeDiagonals)
+                    return indexes.ToArray();
+                
+                indexes.Add(index - sideCount + 1);
+                indexes.Add(index - sideCount - 1);
             }
+            //Left Side
             else if (index % sideCount == 0)
             {
                 indexes.Add(index + 1);
                 indexes.Add(index + sideCount);
                 indexes.Add(index - sideCount);
+
+                if (!includeDiagonals)
+                    return indexes.ToArray();
+                
+                indexes.Add(index + sideCount + 1);
+                indexes.Add(index - sideCount + 1);
             }
+            //Right Side
             else if ((index + 1) % sideCount == 0)
             {
                 indexes.Add(index - 1);
                 indexes.Add(index + sideCount);
                 indexes.Add(index - sideCount);
+
+                if (!includeDiagonals)
+                    return indexes.ToArray();
+                
+                indexes.Add(index + sideCount - 1);
+                indexes.Add(index - sideCount - 1);
             }
             
             return indexes.ToArray();

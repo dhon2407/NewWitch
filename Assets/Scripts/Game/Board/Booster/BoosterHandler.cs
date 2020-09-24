@@ -32,7 +32,7 @@ namespace Game.Board.Booster
                 }
                 case BoosterType.Burst:
                 {
-                    PopSlots(new List<int>(sourceIndex.GetAdjacentIndex(_currentBoardSideCount)));
+                    PopSlots(new List<int>(sourceIndex.GetAdjacentIndex(_currentBoardSideCount, true)));
                     break;
                 }
             }
