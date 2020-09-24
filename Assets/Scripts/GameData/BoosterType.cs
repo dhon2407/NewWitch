@@ -6,5 +6,10 @@
         Slice,
         Burst,
         SameSlot,
+        CrossSlice,
+        BigBurst,
+        BigSlice,
+        BigCrossSlice,
+        BurstAll,
     }
 }
