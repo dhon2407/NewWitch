@@ -147,7 +147,7 @@ namespace Game.Board
                 {
                     slotIcon.sprite = null;
                     slotIcon.DOFade(0, 0);
-                    _boosterDisplayHandler.SetIcon(booster);
+                    _boosterDisplayHandler.SetIcon(booster, _currentKulay);
                 }
                 else
                 {

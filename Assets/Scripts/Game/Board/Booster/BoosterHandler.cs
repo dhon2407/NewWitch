@@ -24,18 +24,30 @@ namespace Game.Board.Booster
             switch (boosterSlotBooster)
             {
                 case BoosterType.Slice:
-                {
                     var isHorizontal = Random.Range(0f, 1f) > 0.5f;
 
                     PopSlots(new List<int>(sourceIndex.GetAdjacentLineIndex(_currentBoardSideCount, isHorizontal)));
                     break;
-                }
                 case BoosterType.Burst:
-                {
                     PopSlots(new List<int>(sourceIndex.GetAdjacentIndex(_currentBoardSideCount, true)));
                     break;
-                }
+                case BoosterType.SameSlot:
+                    PopSlots(GetSameSlotsTypeAs(sourceIndex));
+                    break;
             }
+        }
+
+        private List<int> GetSameSlotsTypeAs(int sourceIndex)
+        {
+            var sameSlots = new List<int>();
+            var referenceSlot = _currentSlots.Find(slot => slot.SlotIndex == sourceIndex);
+
+            if (referenceSlot == null)
+                return sameSlots;
+
+            sameSlots.AddRange(from slot in _currentSlots where !slot.Popped && !slot.IsBoostSlot && slot.Kulay == referenceSlot.Kulay select slot.SlotIndex);
+
+            return sameSlots;
         }
 
         private void PopSlots(List<int> popSlotIndexes)
