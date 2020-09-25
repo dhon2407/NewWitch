@@ -65,7 +65,6 @@ namespace Game.Board
             if (slot.IsBoostSlot)
             {
                 _boosterHandler.ExecuteBooster(slot, _slots, _gridSideCount);
-                slot.Pop();
             }
             else
             {

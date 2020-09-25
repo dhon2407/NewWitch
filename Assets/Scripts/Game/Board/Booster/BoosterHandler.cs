@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GameData;
 using UnityEngine;
 using Utilities.Helpers;
+using Random = UnityEngine.Random;
 
 namespace Game.Board.Booster
 {
@@ -15,8 +17,100 @@ namespace Game.Board.Booster
         {
             _currentSlots = boardSlots;
             _currentBoardSideCount = boardSideCount;
+            var boostType = boosterSlot.Booster;
+
+            if (boostType == BoosterType.BigBurst)
+            {
+                ExecuteBoosterEffect(boosterSlot.SlotIndex, boostType);
+                boosterSlot.Pop();
+                return;
+            }
             
-            ExecuteBoosterEffect(boosterSlot.SlotIndex, boosterSlot.Booster);
+            var adjacentBoosterSlots = GetAdjacentBoosterSlots(boosterSlot);
+            if (adjacentBoosterSlots.Count > 0)
+            {
+                var adjacentBoosterTypes = from slot in adjacentBoosterSlots where slot.IsBoostSlot select slot.Booster;
+                boosterSlot.SetBooster(CombineBooster(boostType, adjacentBoosterTypes.ToList()));
+
+                foreach (var adjacentSlot in adjacentBoosterSlots)
+                    adjacentSlot.Pop();
+            }
+            else
+            {
+                ExecuteBoosterEffect(boosterSlot.SlotIndex, boostType);
+                boosterSlot.Pop();    
+            }
+        }
+
+        private BoosterType CombineBooster(BoosterType referenceBooster, ICollection<BoosterType> otherBoosters)
+        {
+            switch (referenceBooster.GetTier())
+            {
+                case BoosterTier.One:
+                    if (referenceBooster.AllSame(otherBoosters))
+                        return UpdateSameTier(referenceBooster);
+
+                    var otherMaxTier = GetMaxTier(otherBoosters);
+                    
+                    if (otherMaxTier == BoosterTier.One || otherMaxTier == BoosterTier.Two)
+                        return BoosterType.BigCrossSlice;
+
+                    return BoosterType.BurstAll;
+                case BoosterTier.Two:
+                    if (referenceBooster.AllSame(otherBoosters))
+                        return UpdateSameTier(referenceBooster);
+
+                    return GetMaxTier(otherBoosters) < referenceBooster.GetTier() ? BoosterType.BigCrossSlice : BoosterType.BurstAll;
+                case BoosterTier.Three:
+                case BoosterTier.Four:
+                    return BoosterType.BurstAll;
+                default:
+                    return BoosterType.None;
+            }
+        }
+
+        private BoosterTier GetMaxTier(ICollection<BoosterType> otherBoosters)
+        {
+            var currentTier = BoosterTier.One;
+            foreach (var booster in otherBoosters)
+            {
+                var boosterTier = booster.GetTier();
+                if (boosterTier > currentTier)
+                    currentTier = booster.GetTier();
+            }
+
+            return currentTier;
+        }
+
+        private BoosterType UpdateSameTier(BoosterType referenceBooster)
+        {
+            switch (referenceBooster)
+            {
+                case BoosterType.Slice:
+                    return BoosterType.CrossSlice;
+                case BoosterType.Burst:
+                    return BoosterType.BigBurst;
+                case BoosterType.SameSlot:
+                    return BoosterType.BigSlice;
+                case BoosterType.CrossSlice:
+                case BoosterType.BigBurst:
+                case BoosterType.BigSlice:
+                case BoosterType.BigCrossSlice:
+                case BoosterType.BurstAll:
+                    return BoosterType.BurstAll;
+                case BoosterType.None:
+                    return BoosterType.None;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(referenceBooster), referenceBooster, null);
+            }
+        }
+
+        private List<KulaySlot> GetAdjacentBoosterSlots(KulaySlot boosterSlot)
+        {
+            var adjacentIndexes = boosterSlot.SlotIndex.GetAdjacentIndex(_currentBoardSideCount);
+            var adjacentSlots = new List<KulaySlot>(_currentSlots.FindAll(slot => adjacentIndexes.Contains(slot.SlotIndex)));
+            
+            return new List<KulaySlot>(adjacentSlots.FindAll(slot => slot.IsBoostSlot));
         }
 
         private void ExecuteBoosterEffect(int sourceIndex, BoosterType boosterSlotBooster)
@@ -32,6 +126,9 @@ namespace Game.Board.Booster
                     break;
                 case BoosterType.SameSlot:
                     PopSlots(GetSameSlotsTypeAs(sourceIndex));
+                    break;
+                case BoosterType.BigBurst:
+                    PopSlots(GetSameSlotsTypeAs(sourceIndex), true);
                     break;
             }
         }
@@ -49,14 +146,14 @@ namespace Game.Board.Booster
             return sameSlots;
         }
 
-        private void PopSlots(List<int> popSlotIndexes)
+        private void PopSlots(List<int> popSlotIndexes, bool clearAll = false)
         {
             foreach (var slot in _currentSlots.Where(slot => popSlotIndexes.Contains(slot.SlotIndex)))
             {
                 var boosterType = slot.IsBoostSlot ? slot.Booster : (BoosterType?) null;
                 slot.Pop();
                 
-                if (boosterType.HasValue)
+                if (boosterType.HasValue && !clearAll)
                     ExecuteBoosterEffect(slot.SlotIndex, boosterType.Value);
             }
         }
