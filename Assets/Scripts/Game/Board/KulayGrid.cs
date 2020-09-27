@@ -17,6 +17,7 @@ namespace Game.Board
     {
         [SerializeField] private bool showSlotIndex = false;
         [SerializeField, MinValue(0.1f)] private float slotMoveDuration = 0.2f;
+        [SerializeField, MinValue(0.1f)] private float tapUnlockDelay = 0.5f;
         [SerializeField, MinValue(1)] private int slotSpawnOffset = 1;
         [ShowInInspector, ReadOnly] private int _gridSideCount = 0;
 
@@ -36,6 +37,7 @@ namespace Game.Board
         private List<Vector3> _slotsPosition;
         private List<Vector3> _spawnPosition;
         private BoosterHandler _boosterHandler;
+        private bool _boardBusy;
 
         private void Awake()
         {
@@ -62,6 +64,11 @@ namespace Game.Board
 
         private void OnSlotTap(KulaySlot slot)
         {
+            if (_boardBusy)
+                return;
+
+            _boardBusy = true;
+            
             if (slot.IsBoostSlot)
             {
                 _boosterHandler.ExecuteBooster(slot, _slots, _gridSideCount);
@@ -71,7 +78,10 @@ namespace Game.Board
                 var chainCount = ChainPop(slot, new List<int>(slot.SlotIndex));
 
                 if (chainCount <= 1)
+                {
+                    _boardBusy = false;
                     return;
+                }
 
                 if (chainCount == 5)
                     slot.SetBooster(BoosterType.Slice);
@@ -95,6 +105,9 @@ namespace Game.Board
 
             MoveRowSlots(GetRowMovements(rowIndexes));
             RefreshEmptySlotsPosition(slotMoveDuration);
+
+            Action unlockDelay = () => _boardBusy = false;
+            unlockDelay.DelayInvoke(slotMoveDuration + tapUnlockDelay);
         }
 
         private void MoveRowSlots(IEnumerable<(int index, int moveStep)> movements)

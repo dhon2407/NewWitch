@@ -428,6 +428,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showSlotIndex: 0
   slotMoveDuration: 0.2
+  tapUnlockDelay: 0.5
   slotSpawnOffset: 1
 --- !u!114 &137118872
 MonoBehaviour:

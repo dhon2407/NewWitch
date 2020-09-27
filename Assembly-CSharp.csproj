@@ -59,7 +59,17 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Game\Board\Booster\BoosterDisplayHandler.cs" />
+     <Compile Include="Assets\Scripts\Game\Board\Booster\BoosterFactory.cs" />
      <Compile Include="Assets\Scripts\Game\Board\Booster\BoosterHandler.cs" />
+     <Compile Include="Assets\Scripts\Game\Board\Booster\Effects\BigBurstBooster.cs" />
+     <Compile Include="Assets\Scripts\Game\Board\Booster\Effects\BigCrossSliceBooster.cs" />
+     <Compile Include="Assets\Scripts\Game\Board\Booster\Effects\BigSliceBooster.cs" />
+     <Compile Include="Assets\Scripts\Game\Board\Booster\Effects\BurstAllBooster.cs" />
+     <Compile Include="Assets\Scripts\Game\Board\Booster\Effects\BurstBooster.cs" />
+     <Compile Include="Assets\Scripts\Game\Board\Booster\Effects\CrossSliceBooster.cs" />
+     <Compile Include="Assets\Scripts\Game\Board\Booster\Effects\NoEffect.cs" />
+     <Compile Include="Assets\Scripts\Game\Board\Booster\Effects\SameSlotBooster.cs" />
+     <Compile Include="Assets\Scripts\Game\Board\Booster\Effects\SliceBooster.cs" />
      <Compile Include="Assets\Scripts\Game\Board\Booster\IBooster.cs" />
      <Compile Include="Assets\Scripts\Game\Board\KulayGrid.cs" />
      <Compile Include="Assets\Scripts\Game\Board\KulaySlot.cs" />

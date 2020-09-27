@@ -4,7 +4,6 @@ using System.Linq;
 using GameData;
 using UnityEngine;
 using Utilities.Helpers;
-using Random = UnityEngine.Random;
 
 namespace Game.Board.Booster
 {
@@ -12,6 +11,7 @@ namespace Game.Board.Booster
     {
         private List<KulaySlot> _currentSlots;
         private int _currentBoardSideCount;
+        private BoosterFactory _boosterFactory = new BoosterFactory();
 
         public void ExecuteBooster(KulaySlot boosterSlot, List<KulaySlot> boardSlots, int boardSideCount)
         {
@@ -19,7 +19,7 @@ namespace Game.Board.Booster
             _currentBoardSideCount = boardSideCount;
             var boostType = boosterSlot.Booster;
 
-            if (boostType == BoosterType.BigBurst)
+            if (boostType == BoosterType.BurstAll)
             {
                 ExecuteBoosterEffect(boosterSlot.SlotIndex, boostType);
                 boosterSlot.Pop();
@@ -110,40 +110,15 @@ namespace Game.Board.Booster
             var adjacentIndexes = boosterSlot.SlotIndex.GetAdjacentIndex(_currentBoardSideCount);
             var adjacentSlots = new List<KulaySlot>(_currentSlots.FindAll(slot => adjacentIndexes.Contains(slot.SlotIndex)));
             
-            return new List<KulaySlot>(adjacentSlots.FindAll(slot => slot.IsBoostSlot));
+            return new List<KulaySlot>(adjacentSlots.FindAll(slot => slot.IsBoostSlot && slot.Booster != BoosterType.BurstAll));
         }
 
         private void ExecuteBoosterEffect(int sourceIndex, BoosterType boosterSlotBooster)
         {
-            switch (boosterSlotBooster)
-            {
-                case BoosterType.Slice:
-                    var isHorizontal = Random.Range(0f, 1f) > 0.5f;
-                    PopSlots(new List<int>(sourceIndex.GetAdjacentLineIndex(_currentBoardSideCount, isHorizontal)));
-                    break;
-                case BoosterType.Burst:
-                    PopSlots(new List<int>(sourceIndex.GetAdjacentIndex(_currentBoardSideCount, true)));
-                    break;
-                case BoosterType.SameSlot:
-                    PopSlots(GetSameSlotsTypeAs(sourceIndex));
-                    break;
-                case BoosterType.BigBurst:
-                    PopSlots(GetSameSlotsTypeAs(sourceIndex), true);
-                    break;
-            }
-        }
-
-        private List<int> GetSameSlotsTypeAs(int sourceIndex)
-        {
-            var sameSlots = new List<int>();
-            var referenceSlot = _currentSlots.Find(slot => slot.SlotIndex == sourceIndex);
-
-            if (referenceSlot == null)
-                return sameSlots;
-
-            sameSlots.AddRange(from slot in _currentSlots where !slot.Popped && !slot.IsBoostSlot && slot.Kulay == referenceSlot.Kulay select slot.SlotIndex);
-
-            return sameSlots;
+            var popIndexes = _boosterFactory.Build(boosterSlotBooster)
+                .GetAffectedIndexes(sourceIndex, _currentSlots, _currentBoardSideCount);
+            
+            PopSlots(popIndexes, boosterSlotBooster == BoosterType.BurstAll);
         }
 
         private void PopSlots(List<int> popSlotIndexes, bool clearAll = false)

@@ -6,6 +6,40 @@ namespace Utilities.Helpers
 {
     public static class GridIndex
     {
+        public static int[] GetAdjacentOrthoIndex(this int index, int gridSideCount, bool isHorizontal)
+        {
+            var lineIndexes = new List<int>();
+            if (isHorizontal)
+            {
+                var minIndex = index / gridSideCount * gridSideCount;
+                var maxIndex = minIndex + gridSideCount - 1;
+
+                var left = index - 1;
+                var right = index + 1;
+
+                if (left >= minIndex)
+                    lineIndexes.Add(left);
+                if (right <= maxIndex)
+                    lineIndexes.Add(right);
+            }
+            else
+            {
+                var minIndex = index % gridSideCount;
+                var maxIndex = minIndex + gridSideCount * (gridSideCount - 1);
+
+                var up = index - gridSideCount;
+                var down = index + gridSideCount;
+
+                if (up >= minIndex)
+                    lineIndexes.Add(up);
+                if (down <= maxIndex)
+                    lineIndexes.Add(down);
+            }
+
+            return lineIndexes.ToArray();
+        }
+        
+        
         public static int[] GetAdjacentLineIndex(this int index, int gridSideCount, bool isHorizontal)
         {
             var lineIndexes = new int[gridSideCount];
