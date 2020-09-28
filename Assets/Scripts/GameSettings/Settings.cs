@@ -8,9 +8,11 @@ namespace GameSettings
     {
         [Required, SerializeField] private KulaySettings kulaySettings = null;
         [Required, SerializeField] private BoosterSettings boosterSetting = null;
+        [Required, SerializeField] private PowerUpSettings powerUpSettings = null;
         
         public static KulaySettings Kulay => Instance.kulaySettings ? Instance.kulaySettings : throw new UnityException("No Kulay settings found.");
         public static BoosterSettings Booster => Instance.boosterSetting ? Instance.boosterSetting : throw new UnityException("No Kulay settings found.");
+        public static PowerUpSettings PowerUp => Instance.powerUpSettings ? Instance.powerUpSettings : throw new UnityException("No Power up settings found.");
 
         private static Settings _instance;
         private static Settings Instance => _instance ? _instance : Initialize();

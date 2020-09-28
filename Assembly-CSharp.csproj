@@ -73,11 +73,15 @@
      <Compile Include="Assets\Scripts\Game\Board\Booster\IBooster.cs" />
      <Compile Include="Assets\Scripts\Game\Board\KulayGrid.cs" />
      <Compile Include="Assets\Scripts\Game\Board\KulaySlot.cs" />
+     <Compile Include="Assets\Scripts\Game\PowerUp\PowerUpController.cs" />
+     <Compile Include="Assets\Scripts\Game\PowerUp\PowerUpSlot.cs" />
      <Compile Include="Assets\Scripts\GameData\BoosterType.cs" />
      <Compile Include="Assets\Scripts\GameData\Fruit.cs" />
      <Compile Include="Assets\Scripts\GameData\Kulay.cs" />
+     <Compile Include="Assets\Scripts\GameData\PowerUpType.cs" />
      <Compile Include="Assets\Scripts\GameSettings\BoosterSettings.cs" />
      <Compile Include="Assets\Scripts\GameSettings\KulaySettings.cs" />
+     <Compile Include="Assets\Scripts\GameSettings\PowerUpSettings.cs" />
      <Compile Include="Assets\Scripts\GameSettings\Settings.cs" />
      <Compile Include="Assets\Scripts\Utilities\Helpers\CallTiming.cs" />
      <Compile Include="Assets\Scripts\Utilities\Helpers\GridIndex.cs" />

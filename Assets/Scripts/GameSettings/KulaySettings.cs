@@ -30,7 +30,6 @@ namespace GameSettings
                 : new KulayData {kulay = Kulay.None};
         }
 
-
         [Serializable]
         public struct KulayData
         {
@@ -49,11 +48,6 @@ namespace GameSettings
                 if (!kulaySet.Contains(newKulay))
                     kulaySet.Add(newKulay);
             }
-        }
-
-        private void OnValidate()
-        {
-            
         }
     }
 }

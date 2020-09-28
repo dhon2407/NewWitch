@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   kulaySettings: {fileID: 11400000, guid: 236d9b2e0de89414ca7344834ae7ad86, type: 2}
   boosterSetting: {fileID: 11400000, guid: 678126ca6b0c0df4d8d359ae78940c9d, type: 2}
+  powerUpSettings: {fileID: 11400000, guid: 5800a44a4c0b698449b8731997448ee2, type: 2}
