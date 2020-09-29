@@ -42,10 +42,18 @@ namespace Game.Board
             }
         }
 
-        public void Change(Kulay newKulay)
+        public void Change(KulaySlot newSlot)
         {
-            _currentKulay = newKulay;
+            var tempKulay = _currentKulay;
+            var tempBooster = booster;
+            
+            _currentKulay = newSlot._currentKulay;
+            booster = newSlot.booster;
             LoadSlotIcon();
+
+            newSlot._currentKulay = tempKulay;
+            newSlot.booster = tempBooster;
+            newSlot.LoadSlotIcon();
         }
         
         public void Initialize(int currentIndex, bool showIndex)
@@ -139,6 +147,8 @@ namespace Game.Board
             {
                 if (_boosterDisplayHandler)
                     _boosterDisplayHandler.HideIcon();
+                
+                slotIcon.DOFade(1, 0);
                 slotIcon.sprite = Settings.Kulay.GetData(_currentKulay).icon;
             }
             else

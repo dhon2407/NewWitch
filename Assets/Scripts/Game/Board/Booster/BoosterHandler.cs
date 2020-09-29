@@ -41,6 +41,14 @@ namespace Game.Board.Booster
                 boosterSlot.Pop();    
             }
         }
+        
+        public void ExecuteBoosterEffect(int sourceIndex, BoosterType boosterSlotBooster)
+        {
+            var popIndexes = _boosterFactory.Build(boosterSlotBooster)
+                .GetAffectedIndexes(sourceIndex, _currentSlots, _currentBoardSideCount);
+            
+            PopSlots(popIndexes, boosterSlotBooster == BoosterType.BurstAll);
+        }
 
         private BoosterType CombineBooster(BoosterType referenceBooster, ICollection<BoosterType> otherBoosters)
         {
@@ -111,14 +119,6 @@ namespace Game.Board.Booster
             var adjacentSlots = new List<KulaySlot>(_currentSlots.FindAll(slot => adjacentIndexes.Contains(slot.SlotIndex)));
             
             return new List<KulaySlot>(adjacentSlots.FindAll(slot => slot.IsBoostSlot && slot.Booster != BoosterType.BurstAll));
-        }
-
-        private void ExecuteBoosterEffect(int sourceIndex, BoosterType boosterSlotBooster)
-        {
-            var popIndexes = _boosterFactory.Build(boosterSlotBooster)
-                .GetAffectedIndexes(sourceIndex, _currentSlots, _currentBoardSideCount);
-            
-            PopSlots(popIndexes, boosterSlotBooster == BoosterType.BurstAll);
         }
 
         private void PopSlots(List<int> popSlotIndexes, bool clearAll = false)

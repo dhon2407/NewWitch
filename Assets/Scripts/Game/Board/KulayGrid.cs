@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Board.Booster;
+using Game.Board.PowerUp;
 using GameData;
+using Managers;
 using MEC;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -23,11 +25,12 @@ namespace Game.Board
 
         public void Shuffle()
         {
-            var shuffleList = _slots.Select(slot => slot.Kulay).ToList();
-            shuffleList.Shuffle();
+            var activeSlots = (from slot in _slots where !slot.Popped select slot).ToList();
+            var shuffledSlots = (from slot in _slots where !slot.Popped select slot).ToList();
+            shuffledSlots.Shuffle();
 
-            for (int i = 0; i < _slots.Count; i++)
-                _slots[i].Change(shuffleList[i]);
+            for (int i = 0; i < activeSlots.Count; i++)
+                activeSlots[i].Change(shuffledSlots[i]);
         }
 
         private const float EmptySlotCheckDelay = 0.1f;
@@ -37,6 +40,7 @@ namespace Game.Board
         private List<Vector3> _slotsPosition;
         private List<Vector3> _spawnPosition;
         private BoosterHandler _boosterHandler;
+        private PowerUpHandler _powerUpHandler;
         private bool _boardBusy;
 
         private void Awake()
@@ -46,6 +50,7 @@ namespace Game.Board
             _gridLayout = GetComponent<GridLayoutGroup>();
             _gridSideCount = _gridLayout.constraintCount;
             _boosterHandler = GetComponent<BoosterHandler>();
+            _powerUpHandler = GetComponent<PowerUpHandler>();
             
             _spawnPosition = new List<Vector3>(new Vector3[_gridSideCount]);
         }
@@ -67,34 +72,37 @@ namespace Game.Board
             if (_boardBusy)
                 return;
 
-            _boardBusy = true;
-            
-            if (slot.IsBoostSlot)
-            {
+            if (Manager.Board.PowerUps.OnEffect)
+                _powerUpHandler.Execute(Manager.Board.PowerUps.Consume(), slot.SlotIndex, _slots, _gridSideCount, _boosterHandler);
+            else if (slot.IsBoostSlot)
                 _boosterHandler.ExecuteBooster(slot, _slots, _gridSideCount);
-            }
             else
-            {
-                var chainCount = ChainPop(slot, new List<int>(slot.SlotIndex));
+                if (PopSingleSlot(slot)) return;
 
-                if (chainCount <= 1)
-                {
-                    _boardBusy = false;
-                    return;
-                }
-
-                if (chainCount == 5)
-                    slot.SetBooster(BoosterType.Slice);
-                else if (chainCount == 6)
-                    slot.SetBooster(BoosterType.Burst);
-                else if (chainCount >= 7)
-                    slot.SetBooster(BoosterType.SameSlot);
-                else
-                    slot.Pop();
-            }
-
+            _boardBusy = true;
             Action moveSlot = MoveSlots;
             moveSlot.DelayInvoke(0.8f);
+        }
+
+        private bool PopSingleSlot(KulaySlot slot)
+        {
+            var chainCount = ChainPop(slot, new List<int>(slot.SlotIndex));
+
+            if (chainCount <= 1)
+            {
+                _boardBusy = false;
+                return true;
+            }
+
+            if (chainCount == 5)
+                slot.SetBooster(BoosterType.Slice);
+            else if (chainCount == 6)
+                slot.SetBooster(BoosterType.Burst);
+            else if (chainCount >= 7)
+                slot.SetBooster(BoosterType.SameSlot);
+            else
+                slot.Pop();
+            return false;
         }
 
         private void MoveSlots()

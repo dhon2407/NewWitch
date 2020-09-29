@@ -1,4 +1,6 @@
-﻿using GameData;
+﻿using System.Collections.Generic;
+using DG.Tweening;
+using GameData;
 using GameSettings;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -42,6 +44,7 @@ namespace Game.PowerUp
         private Button _button;
         private int _qty;
         private PowerUpType _type;
+        private List<DOTweenAnimation> _animations;
 
         private void Awake()
         {
@@ -50,12 +53,32 @@ namespace Game.PowerUp
             {
                 OnSelectPowerSlot.Invoke(this);
             });
+            
+            SetupAnimations();
         }
-        
+
+        private void SetupAnimations()
+        {
+            _animations = new List<DOTweenAnimation>(GetComponentsInChildren<DOTweenAnimation>());
+            foreach (var tweenAnimation in _animations)
+                tweenAnimation.DORewind();
+        }
+
         private void UpdateIcon()
         {
             if (icon)
                 icon.sprite = Settings.PowerUp.GetData(_type).icon;
+        }
+
+        public void SetActive(bool active)
+        {
+            foreach (var tweenAnimation in _animations)
+            {
+                if (active)
+                    tweenAnimation.DOPlay();
+                else
+                    tweenAnimation.DORewind();
+            }
         }
     }
 }
