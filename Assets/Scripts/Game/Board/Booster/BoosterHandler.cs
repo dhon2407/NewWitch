@@ -21,7 +21,7 @@ namespace Game.Board.Booster
 
             if (boostType == BoosterType.BurstAll)
             {
-                ExecuteBoosterEffect(boosterSlot.SlotIndex, boostType);
+                ExecuteBoosterEffect(boosterSlot.SlotIndex, boostType, boardSlots, boardSideCount);
                 boosterSlot.Pop();
                 return;
             }
@@ -37,13 +37,16 @@ namespace Game.Board.Booster
             }
             else
             {
-                ExecuteBoosterEffect(boosterSlot.SlotIndex, boostType);
+                ExecuteBoosterEffect(boosterSlot.SlotIndex, boostType, boardSlots, boardSideCount);
                 boosterSlot.Pop();    
             }
         }
         
-        public void ExecuteBoosterEffect(int sourceIndex, BoosterType boosterSlotBooster)
+        public void ExecuteBoosterEffect(int sourceIndex, BoosterType boosterSlotBooster, List<KulaySlot> boardSlots, int boardSideCount)
         {
+            _currentSlots = boardSlots;
+            _currentBoardSideCount = boardSideCount;
+            
             var popIndexes = _boosterFactory.Build(boosterSlotBooster)
                 .GetAffectedIndexes(sourceIndex, _currentSlots, _currentBoardSideCount);
             
@@ -129,7 +132,7 @@ namespace Game.Board.Booster
                 slot.Pop();
                 
                 if (boosterType.HasValue && !clearAll)
-                    ExecuteBoosterEffect(slot.SlotIndex, boosterType.Value);
+                    ExecuteBoosterEffect(slot.SlotIndex, boosterType.Value, _currentSlots, _currentBoardSideCount);
             }
         }
     }

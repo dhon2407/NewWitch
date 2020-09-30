@@ -12,20 +12,21 @@ namespace Game.Board.PowerUp
     {
         public void Execute(PowerUpType type, int targetSlotIndex, List<KulaySlot> boardSlots, int boardSideCount, BoosterHandler boosterHandler)
         {
+            var affectedIndexes = new List<int> {targetSlotIndex};
             switch (type)
             {
                 case PowerUpType.None:
                     return;
                 case PowerUpType.VerticalSlice:
-                    PopSlots(new List<int>(targetSlotIndex.GetAdjacentLineIndex(boardSideCount, false)), boardSlots,
-                        boosterHandler);
+                    affectedIndexes.AddRange(targetSlotIndex.GetAdjacentLineIndex(boardSideCount, false));
+                    PopSlots(affectedIndexes, boardSlots, boosterHandler, boardSideCount);
                     break;
                 case PowerUpType.HorizontalSlice:
-                    PopSlots(new List<int>(targetSlotIndex.GetAdjacentLineIndex(boardSideCount, true)), boardSlots,
-                        boosterHandler);
+                    affectedIndexes.AddRange(targetSlotIndex.GetAdjacentLineIndex(boardSideCount, true));
+                    PopSlots(affectedIndexes, boardSlots, boosterHandler, boardSideCount);
                     break;
                 case PowerUpType.ClearSlot:
-                    PopSlots(new List<int>{targetSlotIndex}, boardSlots, boosterHandler);
+                    PopSlots(affectedIndexes, boardSlots, boosterHandler, boardSideCount);
                     break;
                 case PowerUpType.Shuffle:
                     Shuffle(boardSlots);
@@ -45,7 +46,7 @@ namespace Game.Board.PowerUp
                 activeSlots[i].Change(shuffledSlots[i]);
         }
         
-        private void PopSlots(List<int> popSlotIndexes, List<KulaySlot> boardSlots,  BoosterHandler boosterHandler)
+        private void PopSlots(List<int> popSlotIndexes, List<KulaySlot> boardSlots,  BoosterHandler boosterHandler, int boardSideCount)
         {
             foreach (var slot in boardSlots.Where(slot => popSlotIndexes.Contains(slot.SlotIndex)))
             {
@@ -53,7 +54,7 @@ namespace Game.Board.PowerUp
                 slot.Pop();
                 
                 if (boosterType.HasValue)
-                    boosterHandler.ExecuteBoosterEffect(slot.SlotIndex, boosterType.Value);
+                    boosterHandler.ExecuteBoosterEffect(slot.SlotIndex, boosterType.Value, boardSlots, boardSideCount);
             }
         }
     }
