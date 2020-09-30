@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0e6c8a96bfc454f829d281df824bd3a, type: 3}
   m_Name: PowerUpSettings
   m_EditorClassIdentifier: 
+  slotEmptyAlpha: 0.5
+  slotAlphaChangeDuration: 0.2
   powerUps:
   - type: 2
     icon: {fileID: 21300000, guid: 956a8ad6b63fe4b32a29b92cb6fa7237, type: 3}

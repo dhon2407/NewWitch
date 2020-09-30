@@ -25,9 +25,16 @@ namespace Game.PowerUp
             get => _qty;
             set
             {
-                _qty = value;
+                _qty = Mathf.Clamp(value,0,int.MaxValue);
                 if (qty)
+                {
                     qty.text = _qty.ToString("0");
+                    var currentScale = qty.transform.localScale;
+                    qty.transform.DOPunchScale(currentScale * Settings.PowerUp.slotQtyPunchScale, Settings.PowerUp.slotQtyPunchDuration);
+                }
+
+                if (icon)
+                    icon.DOFade(_qty > 0 ? 1 : Settings.PowerUp.slotEmptyAlpha, Settings.PowerUp.slotAlphaChangeDuration);
             }
         }
 
@@ -40,6 +47,22 @@ namespace Game.PowerUp
             
             UpdateIcon();
         }
+        
+        public void SetActive(bool active)
+        {
+            foreach (var tweenAnimation in _animations)
+            {
+                if (active)
+                    tweenAnimation.DOPlay();
+                else
+                    tweenAnimation.DORewind();
+            }
+        }
+
+        public void Consume()
+        {
+            Qty--;
+        }
 
         private Button _button;
         private int _qty;
@@ -51,7 +74,8 @@ namespace Game.PowerUp
             _button = GetComponent<Button>();
             _button.onClick.AddListener(() =>
             {
-                OnSelectPowerSlot.Invoke(this);
+                if (Qty > 0)
+                    OnSelectPowerSlot.Invoke(this);
             });
             
             SetupAnimations();
@@ -68,17 +92,6 @@ namespace Game.PowerUp
         {
             if (icon)
                 icon.sprite = Settings.PowerUp.GetData(_type).icon;
-        }
-
-        public void SetActive(bool active)
-        {
-            foreach (var tweenAnimation in _animations)
-            {
-                if (active)
-                    tweenAnimation.DOPlay();
-                else
-                    tweenAnimation.DORewind();
-            }
         }
     }
 }

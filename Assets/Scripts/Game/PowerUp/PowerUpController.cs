@@ -40,7 +40,7 @@ namespace Game.PowerUp
         {
             foreach (var powerUp in _powerUps)
             {
-                powerUp.Setup();
+                powerUp.Setup(2);// TODO 2 each temporary
                 powerUp.OnSelectPowerSlot.AddListener(HandlePowerUpTrigger);
             }
         }
@@ -64,6 +64,7 @@ namespace Game.PowerUp
         public PowerUpType Consume()
         {
             var currentPowerUpType = _activePowerUp.Type;
+            _activePowerUp.Consume();
             ClearPowerUp();
 
             return currentPowerUpType;
