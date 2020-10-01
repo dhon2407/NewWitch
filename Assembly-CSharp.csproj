@@ -87,7 +87,7 @@
      <Compile Include="Assets\Scripts\Managers\BaseManager.cs" />
      <Compile Include="Assets\Scripts\Managers\GameBoardManager.cs" />
      <Compile Include="Assets\Scripts\Managers\ManagerController.cs" />
-     <Compile Include="Assets\Scripts\UI\Layout\ScreenSections.cs" />
+     <Compile Include="Assets\Scripts\UI\Layout\ScreenSection.cs" />
      <Compile Include="Assets\Scripts\UI\Layout\ScreenVerticalSectionsFitter.cs" />
      <Compile Include="Assets\Scripts\UI\ScreenSafe\ISafeAreaHandler.cs" />
      <Compile Include="Assets\Scripts\UI\ScreenSafe\ScreenSafePanel.cs" />

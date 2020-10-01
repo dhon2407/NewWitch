@@ -1,12 +1,11 @@
-﻿using CustomHelper;
-using Sirenix.OdinInspector;
+﻿using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace UI.Layout
 {
     [RequireComponent(typeof(RectTransform))]
     [HideMonoScript]
-    public class ScreenSections : MonoBehaviour
+    public class ScreenSection : MonoBehaviour
     {
         public void DockedBottom()
         {

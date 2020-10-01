@@ -34,8 +34,8 @@ namespace UI.Layout
 
             foreach (var sectionData in sections)
             {
-                var section = sectionData.Section;
-                if (sectionData.Section)
+                var section = sectionData.section;
+                if (sectionData.section)
                 {
                     var sectionHeight = rect.height * (sectionData.Coverage / 100f);
                     section.DockedBottom();
@@ -73,7 +73,7 @@ namespace UI.Layout
         [System.Serializable]
         private struct SectionData
         {
-            public ScreenSections Section;
+            public ScreenSection section;
             [MinValue(0)]
             public int Coverage;
         }
